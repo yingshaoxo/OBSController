@@ -13,9 +13,11 @@ export function Greetings() {
       <Image
         src="https://www.vectorlogo.zone/logos/reactjs/reactjs-icon.svg"
         alt="ReactJS logo"
+        className="draggable"
       />
-      <Text>An Electron boilerplate including TypeScript, React, Jest and ESLint.</Text>
-      <Button onClick={handleSayHello}>Send message to main process</Button>
+      <Text>Made by yingshaoxo</Text>
+      {/* <Text>An Electron boilerplate including TypeScript, React, Jest and ESLint.</Text> */}
+      {/* <Button onClick={handleSayHello}>Send message to main process</Button> */}
     </Container>
   )
 }

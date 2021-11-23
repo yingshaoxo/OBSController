@@ -12,4 +12,10 @@ export const GlobalStyle = createGlobalStyle`
     font-size: 16px;
     color: #E1E1E6;
   }
+
+  .draggable {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-app-region: drag;
+  }
 `
