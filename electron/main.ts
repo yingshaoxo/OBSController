@@ -13,7 +13,7 @@ declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string
 function createWindow () {
   mainWindow = new BrowserWindow({
     // icon: path.join(assetsPath, 'assets', 'icon.png'),
-    width: 300,
+    width: 600,
     height: 300,
     transparent: true,
     frame: false,
@@ -27,7 +27,11 @@ function createWindow () {
     }
   })
 
-  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
+  mainWindow.setAlwaysOnTop(true, "screen-saver") 
+  mainWindow.setVisibleOnAllWorkspaces(true)
+
+  // mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
+  mainWindow.loadURL("http://localhost:8081/")
 
   mainWindow.on('closed', () => {
     mainWindow = null
