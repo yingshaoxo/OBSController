@@ -10,24 +10,31 @@ const rotate = keyframes`
 `
 
 export const Container = styled.div`
-  height: 100vh;
-  padding: 25px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: fit-content;
 
   button {
-    margin-top: 24px;
+    // margin-top: 24px;
+    // width: 100%;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-app-region: drag;
+
+    height: 42px;
+    width: 80px;
   }
+
+  background: #8257e6;
 `
 
 export const Image = styled.img`
-  width: 240px;
   animation: ${rotate} 15s linear infinite;
 `
 
 export const Text = styled.p`
-  margin-top: 24px;
+  // margin-top: 24px;
   font-size: 18px;
 `

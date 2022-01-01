@@ -1,0 +1,9 @@
+name: obs_socket_service
+
+environment:
+  sdk: '>=2.10.0 <3.0.0'
+
+dependencies:
+  shelf_router: ^1.1.2
+  obs_websocket: ^2.2.11
+

@@ -15,6 +15,10 @@
   "keywords": [],
   "license": "MIT",
   "dependencies": {
+    "@mediapipe/camera_utils": "^0.3.1640029074",
+    "@mediapipe/holistic": "^0.5.1635989137",
+    "@mediapipe/pose": "^0.5.1635988162",
+    "kalidokit": "^1.1.2",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-hot-loader": "4.13.0",
