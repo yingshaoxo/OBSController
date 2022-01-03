@@ -1,11 +1,24 @@
 import { GlobalStyle } from './styles/GlobalStyle'
 
-import { Greetings } from './components/Greetings'
+import { PauseOrResumeButton } from './components/PauseOrResumeButton'
+import { ChracterView } from './components/Character'
 
 export function App() {
   return (
     <>
-      <Greetings />
+
+      <GlobalStyle />
+
+      <ChracterView></ChracterView>
+
+      {/* <div style={
+        {
+          display: 'flex',
+          justifyContent: 'center',
+        }
+      }>
+        <PauseOrResumeButton />
+      </div> */}
     </>
   )
 }

@@ -47,17 +47,18 @@ function createWindow() {
     hasShadow: false,
     // backgroundColor: '#00ff00',
     webPreferences: {
-      nodeIntegration: false,
+      nodeIntegration: true,
       contextIsolation: true,
-      // enableRemoteModule: true,
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      enableRemoteModule: true,
+      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY
     }
   })
 
-  mainWindow.setAlwaysOnTop(true, "screen-saver")
+  // mainWindow.setAlwaysOnTop(true, "screen-saver")
   mainWindow.setVisibleOnAllWorkspaces(true)
+  // mainWindow.setIgnoreMouseEvents(true)
 
-  // mainWindow.maximize()
+  mainWindow.maximize()
   // mainWindow.loadURL("http://localhost:8000/")
 
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
@@ -94,4 +95,24 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow()
   }
+})
+
+ipcMain.on('log', (event, arg) => {
+  myConsole.log("hhhhhhhh");
+})
+
+
+ipcMain.on('max_window', (event, arg) => {
+  mainWindow?.maximize()
+  mainWindow?.setAlwaysOnTop(false, "screen-saver")
+})
+
+
+ipcMain.on('reset_window', (event, arg) => {
+  mainWindow?.unmaximize()
+  mainWindow?.setAlwaysOnTop(true, "screen-saver")
+})
+
+ipcMain.on('reload_it', (event, arg) => {
+  mainWindow?.reload()
 })
