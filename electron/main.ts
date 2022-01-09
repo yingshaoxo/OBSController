@@ -1,26 +1,40 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
-var child = require('child_process').execFile;
+import { app, BrowserWindow, ipcMain, Menu, MenuItem, Tray, net } from 'electron'
+const child = require('child_process').execFile;
 
 const path = require('path');
 
-var nodeConsole = require('console');
-var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
+const nodeConsole = require('console');
+const myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 let mainWindow: BrowserWindow | null
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string
 
-// const assetsPath =
-//   process.env.NODE_ENV === 'production'
-//     ? process.resourcesPath
-//     : app.getAppPath()
+const assetsPath =
+  process.env.NODE_ENV === 'production'
+    ? process.resourcesPath
+    : app.getAppPath()
+
+
+function sendHTTPRequest(url: string) {
+  const request = net.request(url)
+  request.on('response', (response) => {
+    response.on('data', (chunk) => {
+      console.log(`BODY: ${chunk}`)
+    })
+    response.on('end', () => {
+      console.log('No more data in response.')
+    })
+  })
+  request.end()
+}
 
 // const serviceExePath = path.join(__dirname, "assets", "service.exe");
 const serviceExePath = "/Users/yingshaoxo/CS/OBSfunnyMaker/assets/service.exe";
 setTimeout(() => {
   myConsole.log(serviceExePath);
-  child(serviceExePath, [], (err, stdout, stderr) => {
+  child(serviceExePath, [], (err: any, stdout: any, stderr: any) => {
     if (err) {
       myConsole.log(err);
       return;
@@ -30,11 +44,40 @@ setTimeout(() => {
   });
 }, 1000);
 
-function createWindow() {
-  const { screen } = require('electron')
-  const primaryDisplay = screen.getPrimaryDisplay()
-  const { width, height } = primaryDisplay.workAreaSize
 
+let recordingIsOn = false;
+
+const onIconPath = path.join(assetsPath, 'assets', 'on-28x28.png')
+const offIconPath = path.join(assetsPath, 'assets', 'off-28x28.png')
+let tray: Tray | null = null
+function setIcon() {
+  // app.dock.hide()
+
+  const iconPath = offIconPath
+  tray = new Tray(iconPath)
+  // const contextMenu = Menu.buildFromTemplate([
+  //   { label: 'Info' },
+  //   { label: 'Quit' },
+  // ])
+  // tray.setContextMenu(contextMenu)
+  tray.setToolTip('This is the avator app created by yingshaoxo.')
+  tray.setIgnoreDoubleClickEvents(true)
+
+
+  tray.on('click', function (e) {
+    if (recordingIsOn) {
+      sendHTTPRequest('http://localhost:52000/pause')
+      tray?.setImage(offIconPath)
+      recordingIsOn = false;
+    } else {
+      sendHTTPRequest('http://localhost:52000/resume')
+      tray?.setImage(onIconPath)
+      recordingIsOn = true;
+    }
+  });
+}
+
+function createWindow() {
   mainWindow = new BrowserWindow({
     // icon: path.join(assetsPath, 'assets', 'icon.png'),
     width: 600,
@@ -53,6 +96,7 @@ function createWindow() {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY
     }
   })
+
 
   // mainWindow.setAlwaysOnTop(true, "screen-saver")
   mainWindow.setVisibleOnAllWorkspaces(true)
@@ -80,9 +124,15 @@ async function registerListeners() {
   })
 }
 
-app.on('ready', createWindow)
+
+app.on('ready', () => {
+  setIcon()
+  createWindow()
+})
   .whenReady()
-  .then(registerListeners)
+  .then(() => {
+    registerListeners()
+  })
   .catch(e => console.error(e))
 
 app.on('window-all-closed', () => {

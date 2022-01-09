@@ -14,11 +14,13 @@ void main(List<String> args) {
 
     app.get('/pause', (Request request) async {
       await obsWebSocket.pauseRecording();
+      print("pause");
       return Response.ok('paused');
     });
 
     app.get('/resume', (Request request) async {
       await obsWebSocket.resumeRecording();
+      print("resume");
       return Response.ok('resumed');
     });
 
