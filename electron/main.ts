@@ -31,18 +31,18 @@ function sendHTTPRequest(url: string) {
 }
 
 // const serviceExePath = path.join(__dirname, "assets", "service.exe");
-const serviceExePath = "/Users/yingshaoxo/CS/OBSfunnyMaker/assets/service.exe";
-setTimeout(() => {
-  myConsole.log(serviceExePath);
-  child(serviceExePath, [], (err: any, stdout: any, stderr: any) => {
-    if (err) {
-      myConsole.log(err);
-      return;
-    }
-    myConsole.log(stdout);
-    myConsole.log(stderr);
-  });
-}, 1000);
+// const serviceExePath = "/Users/yingshaoxo/CS/OBSfunnyMaker/assets/service.exe";
+// setTimeout(() => {
+//   myConsole.log(serviceExePath);
+//   child(serviceExePath, [], (err: any, stdout: any, stderr: any) => {
+//     if (err) {
+//       myConsole.log(err);
+//       return;
+//     }
+//     myConsole.log(stdout);
+//     myConsole.log(stderr);
+//   });
+// }, 1000);
 
 
 let recordingIsOn = false;
@@ -66,11 +66,13 @@ function setIcon() {
 
   tray.on('click', function (e) {
     if (recordingIsOn) {
-      sendHTTPRequest('http://localhost:52000/pause')
+      //sendHTTPRequest('http://localhost:52000/pause')
+      sendHTTPRequest('http://localhost:8000/obs/stop_script')
       tray?.setImage(offIconPath)
       recordingIsOn = false;
     } else {
-      sendHTTPRequest('http://localhost:52000/resume')
+      //sendHTTPRequest('http://localhost:52000/resume')
+      sendHTTPRequest('http://localhost:8000/obs/start_script')
       tray?.setImage(onIconPath)
       recordingIsOn = true;
     }
