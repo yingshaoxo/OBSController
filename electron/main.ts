@@ -26,6 +26,9 @@ function sendHTTPRequest(url: string) {
     response.on('end', () => {
       console.log('No more data in response.')
     })
+    response.on('error', (error: any) => {
+      console.log(`ERROR: ${JSON.stringify(error)}`)
+    })
   })
   request.end()
 }
@@ -66,8 +69,23 @@ function setIcon() {
 
   tray.on('click', function (e) {
     if (recordingIsOn) {
+      sendHTTPRequest('http://localhost:8000/obs/pause')
+      tray?.setImage(offIconPath)
+      recordingIsOn = false;
+    } else {
+      sendHTTPRequest('http://localhost:8000/obs/start')
+      sendHTTPRequest('http://localhost:8000/obs/resume')
+      tray?.setImage(onIconPath)
+      recordingIsOn = true;
+    }
+  });
+
+  tray.on('right-click', function (e) {
+    if (recordingIsOn) {
       //sendHTTPRequest('http://localhost:52000/pause')
       sendHTTPRequest('http://localhost:8000/obs/stop_script')
+      sendHTTPRequest('http://localhost:8000/obs/pause')
+      tray?.setImage(offIconPath)
       tray?.setImage(offIconPath)
       recordingIsOn = false;
     } else {
