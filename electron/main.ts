@@ -69,6 +69,7 @@ function setIcon() {
 
   tray.on('click', function (e) {
     if (recordingIsOn) {
+      sendHTTPRequest('http://localhost:8000/obs/stop_script')
       sendHTTPRequest('http://localhost:8000/obs/pause')
       tray?.setImage(offIconPath)
       recordingIsOn = false;
