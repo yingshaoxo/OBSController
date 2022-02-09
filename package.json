@@ -5,7 +5,8 @@
   "description": "An Electron boilerplate including TypeScript, React, Jest and ESLint.",
   "main": "./.webpack/main/index.js",
   "scripts": {
-    "start": "electron-forge start",
+    "start": "export showAvator=1; electron-forge start",
+    "simple": "export showAvator=0; electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "release": "electron-forge publish",

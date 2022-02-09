@@ -1,10 +1,15 @@
 import { app, BrowserWindow, ipcMain, Menu, MenuItem, Tray, net } from 'electron'
+import { env } from 'process';
+
 const child = require('child_process').execFile;
 
 const path = require('path');
 
 const nodeConsole = require('console');
 const myConsole = new nodeConsole.Console(process.stdout, process.stderr);
+
+const showAvator = env.showAvator
+myConsole.log("\n\nthe Code: " + showAvator + "\n\n");
 
 let mainWindow: BrowserWindow | null
 
@@ -126,7 +131,9 @@ function createWindow() {
   mainWindow.maximize()
   // mainWindow.loadURL("http://localhost:8000/")
 
-  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
+  if (showAvator === "1") {
+    mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
+  }
 
   // mainWindow.webContents.openDevTools()
 
