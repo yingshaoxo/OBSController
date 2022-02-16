@@ -84,6 +84,7 @@
         [
           "@electron-forge/plugin-webpack",
           {
+            "loggerPort": 12355,
             "mainConfig": "./webpack/main.webpack.js",
             "renderer": {
               "config": "./webpack/renderer.webpack.js",
