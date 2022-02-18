@@ -131,6 +131,7 @@ function createWindow() {
   mainWindow.maximize()
   // mainWindow.loadURL("http://localhost:8000/")
 
+  myConsole.log(MAIN_WINDOW_WEBPACK_ENTRY)
   if (showAvator === "1") {
     mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
   }
