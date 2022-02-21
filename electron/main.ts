@@ -134,6 +134,9 @@ function createWindow() {
   myConsole.log(MAIN_WINDOW_WEBPACK_ENTRY)
   if (showAvator === "1") {
     mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
+  } else {
+    mainWindow.setSize(1, 1)
+    mainWindow.minimize()
   }
 
   // mainWindow.webContents.openDevTools()
