@@ -109,7 +109,7 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "Electron Starter"
+            "name": "OBS Controller"
           }
         },
         {
