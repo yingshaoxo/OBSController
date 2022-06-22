@@ -1,35 +1,12 @@
-## Electron + TypeScript + React
+## OBS Controller
 
-Boilerplate for a project using Electron, React and Typescript.
+Use this app to control the OBS recording in an easy way.
 
-## Installation
+### But you need to do the following first
+1. install obs-websocket: https://github.com/obsproject/obs-websocket/releases
 
-Use a package manager of your choice (npm, yarn, etc.) in order to install all dependencies
+2. config it:
+![](config.png)
 
-```bash
-yarn
-```
-
-## Usage
-
-Just run `start` script.
-
-```bash
-yarn start
-```
-
-## Packaging
-
-To generate the project package based on the OS you're running on, just run:
-
-```bash
-yarn package
-```
-
-## Contributing
-
-Pull requests are always welcome 😃.
-
-## License
-
-[MIT](https://choosealicense.com/licenses/mit/)
+### How to Use
+After you run, at the top menu bar, you shall see a little circle icon, click it to start or stop the recording

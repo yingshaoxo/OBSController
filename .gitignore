@@ -4,3 +4,4 @@ packages
 .webpack
 out
 *.exe
+.DS_Store

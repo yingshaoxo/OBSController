@@ -1,7 +1,7 @@
-import { app, BrowserWindow, ipcMain, Menu, MenuItem, Tray, net } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, Tray } from 'electron'
 import { env } from 'process';
 
-const child = require('child_process').execFile;
+import OBSWebSocket from 'obs-websocket-js';
 
 const path = require('path');
 
@@ -10,6 +10,8 @@ const myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 const showAvator = env.showAvator
 myConsole.log("\n\nthe Code: " + showAvator + "\n\n");
+
+const obs = new OBSWebSocket();
 
 let mainWindow: BrowserWindow | null
 
@@ -22,99 +24,122 @@ const assetsPath =
     : app.getAppPath()
 
 
-function sendHTTPRequest(url: string) {
-  const request = net.request(url)
-  request.on('response', (response) => {
-    response.on('data', (chunk) => {
-      console.log(`BODY: ${chunk}`)
-    })
-    response.on('end', () => {
-      console.log('No more data in response.')
-    })
-    response.on('error', (error: any) => {
-      console.log(`ERROR: ${JSON.stringify(error)}`)
-    })
+const preConnection = async ()=> {
+  await obs.connect(
+    {address: 'localhost:4444', password: "highhighlife"}
+  ).catch((e) => {
+    console.log(e)
   })
-  request.end()
 }
 
-// const serviceExePath = path.join(__dirname, "assets", "service.exe");
-// const serviceExePath = "/Users/yingshaoxo/CS/OBSfunnyMaker/assets/service.exe";
-// setTimeout(() => {
-//   myConsole.log(serviceExePath);
-//   child(serviceExePath, [], (err: any, stdout: any, stderr: any) => {
-//     if (err) {
-//       myConsole.log(err);
-//       return;
-//     }
-//     myConsole.log(stdout);
-//     myConsole.log(stderr);
-//   });
-// }, 1000);
+const checkIfOnline = async () => {
+  try {
+    await preConnection()
+    await obs.send('GetRecordingStatus',)
+    /*
+    {
+      isRecording: true,
+      isRecordingPaused: true,
+      'message-id': '1',
+      recordTimecode: '00:00:02.135',
+      recordingFilename: '/Users/yingshaoxo/Movies/Videos/yayi/2022-06-22 10-19-00.mkv',
+      status: 'ok',
+      messageId: '1'
+    }
+    */
+    return true
+  } catch {
+    return false
+  }
+}
 
+const pauseVideo = async () => {
+  await obs.send(
+    'PauseRecording',
+    undefined
+  ).catch((e) => {
+    console.log(e)
+  })
+}
+
+const resumeVideo = async ()=> {
+  await checkIfOnline()
+
+  await obs.send('StartRecording', undefined).catch((e)=>{
+    console.log(e)
+  })
+  await obs.send('ResumeRecording', undefined).catch((e) => {
+    console.log(e)
+  })
+}
 
 let recordingIsOn = false;
 
 const onIconPath = path.join(assetsPath, 'assets', 'on-28x28.png')
 const offIconPath = path.join(assetsPath, 'assets', 'off-28x28.png')
+const appIconPath = path.join(assetsPath, 'assets', 'icon.icns')
 let tray: Tray | null = null
 function setIcon() {
-  // app.dock.hide()
-
   const iconPath = offIconPath
   tray = new Tray(iconPath)
-  // const contextMenu = Menu.buildFromTemplate([
-  //   { label: 'Info' },
-  //   { label: 'Quit' },
-  // ])
-  // tray.setContextMenu(contextMenu)
   tray.setToolTip('This is the avator app created by yingshaoxo.')
   tray.setIgnoreDoubleClickEvents(true)
 
 
-  tray.on('click', function (e) {
+  tray.on('click', async (e) => {
+    if (!await checkIfOnline()) {
+      const options  = {
+        buttons: ["OK"],
+        message: "Can't connect to OBS, did you open it?",
+        icon: appIconPath
+      }
+      dialog.showMessageBox(options)
+      return
+    }
+
     if (recordingIsOn) {
-      sendHTTPRequest('http://localhost:8000/obs/stop_script')
-      sendHTTPRequest('http://localhost:8000/obs/pause')
+      await pauseVideo()
       tray?.setImage(offIconPath)
       recordingIsOn = false;
     } else {
-      sendHTTPRequest('http://localhost:8000/obs/start')
-      sendHTTPRequest('http://localhost:8000/obs/resume')
+      await resumeVideo()
       tray?.setImage(onIconPath)
       recordingIsOn = true;
     }
   });
 
-  tray.on('right-click', function (e) {
-    if (recordingIsOn) {
-      //sendHTTPRequest('http://localhost:52000/pause')
-      sendHTTPRequest('http://localhost:8000/obs/stop_script')
-      sendHTTPRequest('http://localhost:8000/obs/pause')
-      tray?.setImage(offIconPath)
-      tray?.setImage(offIconPath)
-      recordingIsOn = false;
-    } else {
-      //sendHTTPRequest('http://localhost:52000/resume')
-      sendHTTPRequest('http://localhost:8000/obs/start_script')
-      tray?.setImage(onIconPath)
-      recordingIsOn = true;
+  tray.on('right-click', async (e) => {
+    try {
+      const { recordingFilename='' } = await obs.send('GetRecordingStatus',)
+      if (recordingFilename !== '') {
+        const theFolder = require('path').dirname(recordingFilename);
+        const {clipboard} = require('electron');
+        const string = `open '${theFolder}'`
+        clipboard.writeText(string);
+
+        const options  = {
+          buttons: ["OK"],
+          message: `Copid:\n\n${string}`,
+          icon: appIconPath
+        }
+        dialog.showMessageBox(options)
+      }
+    } catch {
     }
   });
 }
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    // icon: path.join(assetsPath, 'assets', 'icon.png'),
     width: 600,
     height: 300,
     x: 0,
     y: 0,
+    icon: appIconPath,
     transparent: true,
     frame: false,
     resizable: true,
     hasShadow: false,
-    // backgroundColor: '#00ff00',
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
@@ -123,18 +148,15 @@ function createWindow() {
     }
   })
 
-
-  // mainWindow.setAlwaysOnTop(true, "screen-saver")
   mainWindow.setVisibleOnAllWorkspaces(true)
-  // mainWindow.setIgnoreMouseEvents(true)
 
   mainWindow.maximize()
-  // mainWindow.loadURL("http://localhost:8000/")
 
   myConsole.log(MAIN_WINDOW_WEBPACK_ENTRY)
   if (showAvator === "1") {
     mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
   } else {
+    // mainWindow.loadURL("http://baidu.com")
     mainWindow.setSize(1, 1)
     mainWindow.minimize()
   }
@@ -148,11 +170,14 @@ function createWindow() {
 }
 
 async function registerListeners() {
-  /**
-   * This comes from bridge integration, check bridge.ts
-   */
   ipcMain.on('message', (_, message) => {
     console.log(message)
+  })
+
+  await obs.connect(
+    {address: 'localhost:4444', password: "highhighlife"}
+  ).catch((e) => {
+    console.log(e)
   })
 }
 
@@ -167,8 +192,9 @@ app.on('ready', () => {
   })
   .catch(e => console.error(e))
 
-app.on('window-all-closed', () => {
+app.on('window-all-closed', async () => {
   if (process.platform !== 'darwin') {
+    await obs.disconnect()
     app.quit()
   }
 })

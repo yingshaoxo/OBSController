@@ -5,8 +5,8 @@
   "description": "An Electron boilerplate including TypeScript, React, Jest and ESLint.",
   "main": "./.webpack/main/index.js",
   "scripts": {
-    "start": "export showAvator=1; electron-forge start",
-    "simple": "export showAvator=0; electron-forge start",
+    "avator": "export showAvator=1; electron-forge start",
+    "start": "export showAvator=0; electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "release": "electron-forge publish",
@@ -20,6 +20,8 @@
     "@mediapipe/holistic": "^0.5.1635989137",
     "@mediapipe/pose": "^0.5.1635988162",
     "kalidokit": "^1.1.2",
+    "obs-websocket-js": "4.0.3",
+    "open": "^8.4.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-helmet": "^6.1.0",
@@ -73,9 +75,9 @@
   "config": {
     "forge": {
       "packagerConfig": {
-        "name": "Electron starter",
-        "executableName": "electron-starter",
-        "icon": "assets/icon",
+        "name": "OBS Controller",
+        "executableName": "obs-controller",
+        "icon": "assets/icon.icns",
         "extraResource": [
           "assets"
         ]
