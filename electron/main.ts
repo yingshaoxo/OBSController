@@ -35,18 +35,12 @@ const preConnection = async ()=> {
 const checkIfOnline = async () => {
   try {
     await preConnection()
+  } catch {
+
+  }
+
+  try {
     await obs.send('GetRecordingStatus',)
-    /*
-    {
-      isRecording: true,
-      isRecordingPaused: true,
-      'message-id': '1',
-      recordTimecode: '00:00:02.135',
-      recordingFilename: '/Users/yingshaoxo/Movies/Videos/yayi/2022-06-22 10-19-00.mkv',
-      status: 'ok',
-      messageId: '1'
-    }
-    */
     return true
   } catch {
     return false
@@ -63,8 +57,6 @@ const pauseVideo = async () => {
 }
 
 const resumeVideo = async ()=> {
-  await checkIfOnline()
-
   await obs.send('StartRecording', undefined).catch((e)=>{
     console.log(e)
   })
